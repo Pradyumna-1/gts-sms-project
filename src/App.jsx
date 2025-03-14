@@ -1,16 +1,22 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import React from "react";
-import "./App.css";
-import Reagister from "./components/login/Reagister";
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./components/login/Login";
+import Register from "./components/login/Register";
+import Home from "./components/home/Home";
+import AuthForm from "./components/login/AuthForm";
 
 function App() {
+  const [users, setUsers] = useState([]);
+
   return (
-    <>
-      {/* <h1 className="">Hello</h1> */}
-      <Reagister />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AuthForm users={users} setUsers={setUsers} />} />
+        <Route path="/login" element={<Login users={users} />} />
+        <Route path="/register" element={<Register setUsers={setUsers} />} />
+        <Route path="/home" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

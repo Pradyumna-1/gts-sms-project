@@ -1,20 +1,25 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
-const Reagister = () => {
+const Register = ({ setUsers }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
+  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.traget.name]: e.traget.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("register user", formData);
+    setUsers((prevUsers) => [...prevUsers, formData]);
+    setMessage("Registration successful! You can now log in.");
+    setFormData({ name: "", email: "", password: "" });
   };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 w-96 rounded-lg shadow-lg">
@@ -22,7 +27,7 @@ const Reagister = () => {
           Register
         </h2>
         <form
-          onClick={handleSubmit}
+          onSubmit={handleSubmit}
           action=""
           className="w-full flex flex-col gap-4"
         >
@@ -59,13 +64,17 @@ const Reagister = () => {
           >
             Create Account
           </button>
-          <a className="text-zinc-700 " href="/login">
+
+          <Link className="text-zinc-700" to="/login">
             Login
-          </a>
+          </Link>
         </form>
+        <div className="absolute mt-6 left-1/2 transform -translate-x-1/2  px-4 py-2 text-green-500">
+          {message}
+        </div>
       </div>
     </div>
   );
 };
 
-export default Reagister;
+export default Register;
