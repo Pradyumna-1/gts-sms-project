@@ -21,13 +21,13 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ✅ Ensure session persistence
+// Ensure session persistence
 setPersistence(auth, browserSessionPersistence)
   .then(() => {
-    console.log("✅ Firebase Auth Persistence Enabled");
+    console.log("Firebase Auth Persistence Enabled");
   })
   .catch((error) => {
-    console.error("❌ Firebase Persistence Error:", error);
+    console.error(" Firebase Persistence Error:", error);
   });
 
 export { auth, db };

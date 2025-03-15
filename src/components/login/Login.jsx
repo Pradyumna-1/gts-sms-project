@@ -25,6 +25,9 @@ const Login = () => {
   //     setError("Invalid email or password");
   //   }
   // };
+
+  // Login the user by email and password after matched the data from firebase
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -72,6 +75,8 @@ const Login = () => {
             Login
           </button>
 
+          {/* It will take the user if he/she is not register  */}
+
           <Link className="text-zinc-700" to="/register">
             Register
           </Link>
@@ -79,8 +84,8 @@ const Login = () => {
         {/* error message if the user enter wrong email or password */}
         <div className="absolute mt-6 left-1/2 transform -translate-x-1/2  px-4 py-2 text-red-500">
           {error}
-          
-          {/* Show login message if redirected from AuthForm */}
+
+          {/* Displaying login message if redirected from AuthForm */}
           {loginMessage && (
             <p className="text-red-500 text-center ">{loginMessage}</p>
           )}

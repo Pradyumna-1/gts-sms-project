@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfig";
+import Navbar from "../home/navbar/Navbar";
 
 const AuthForm = () => {
   const [user, setUser] = useState(null);
@@ -9,7 +10,7 @@ const AuthForm = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log("Auth state changed:", currentUser); // ✅ Debugging log
+      console.log("Auth state changed:", currentUser);
       setUser(currentUser);
       setLoading(false);
     });
@@ -17,21 +18,30 @@ const AuthForm = () => {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return null; // ✅ Prevent unnecessary redirect before auth check
-
+  if (loading) return null;
+// check wheather the user is loged in or and if not logedin and try to go to the other page then it will redirect to the login page and display the error message (for the authentication and autherization or security purpose ) 
   if (!user) {
-    // ✅ Only show message if user was trying to access a protected route
     const showMessage = window.location.pathname !== "/login";
     return (
       <Navigate
         to="/login"
-        state={{ message: showMessage ? "Login first" : "" }}
+        state={{ message: showMessage ? "Login first " : "" }}
         replace
       />
     );
   }
 
-  return <Outlet />;
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Navbar stays at the top */}
+      <Navbar />
+
+      {/* Page content appears below the navbar */}
+      <div className="flex-grow p-6">
+        <Outlet />
+      </div>
+    </div>
+  );
 };
 
 export default AuthForm;
