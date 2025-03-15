@@ -5,16 +5,20 @@ import Register from "./components/login/Register";
 import Home from "./components/home/Home";
 import AuthForm from "./components/login/AuthForm";
 
+
 function App() {
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AuthForm users={users} setUsers={setUsers} />} />
-        <Route path="/login" element={<Login users={users} />} />
-        <Route path="/register" element={<Register setUsers={setUsers} />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        <Route element={<AuthForm />}>
+          <Route path="/home" element={<Home />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

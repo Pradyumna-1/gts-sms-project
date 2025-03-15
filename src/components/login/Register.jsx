@@ -1,7 +1,10 @@
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
-const Register = ({ setUsers }) => {
+import { auth } from "../../firebase/firebaseConfig";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebaseConfig";
+const Register = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,11 +16,26 @@ const Register = ({ setUsers }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setUsers((prevUsers) => [...prevUsers, formData]);
-    setMessage("Registration successful! You can now log in.");
-    setFormData({ name: "", email: "", password: "" });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const user = userCredential.user;
+
+      await setDoc(doc(db, "user", user.uid), {
+        name: formData.name,
+        email: user.email,
+        createdAt: serverTimestamp(),
+      });
+      setMessage("Registration successfull! now you can log in.");
+      setFormData({ name: "", email: "", password: "" });
+    } catch (error) {
+      setMessage(error.message);
+    }
   };
 
   return (
