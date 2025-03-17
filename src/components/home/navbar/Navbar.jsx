@@ -12,15 +12,17 @@ const Navbar = () => {
         <li className="text-blue-600 hover:underline  ">
           <Link to="/about">About</Link>
         </li>
-        <li className="text-blue-600 hover:underline ">
-          <Link to="/contactus">Contact Us</Link>
-        </li>
+
         <li className="text-blue-600 hover:underline ">
           <Link to="/services">Services</Link>
         </li>
+
         <li className="text-blue-600 hover:underline ">
-          <Link to="/help">Help</Link>
+          <Link to="/contactus">Contact Us</Link>
         </li>
+        {/* <li className="text-blue-600 hover:underline ">
+          <Link to="/help">Help</Link>
+        </li> */}
       </div>
     </div>
   );
