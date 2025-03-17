@@ -10,28 +10,32 @@ import Services from "./components/home/navbar/Services";
 import Help from "./components/home/navbar/Help";
 import BankingServices from "./components/home/services/BankingServices";
 import OtherServices from "./components/home/services/OtherServices";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   // const [users, setUsers] = useState([]);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        {/*Used Nested Roting for Security purpose to  not allow unauthorized user to access the page*/}
-        <Route element={<AuthForm />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contactus" element={<ContactUs />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/help" element={<Help />} />
-          <Route path="/bankingservices" element={<BankingServices />} />
-          <Route path="/otherservices" element={<OtherServices />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          {/*Used Nested Roting for Security purpose to  not allow unauthorized user to access the page*/}
+          <Route element={<AuthForm />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contactus" element={<ContactUs />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/bankingservices" element={<BankingServices />} />
+            <Route path="/otherservices" element={<OtherServices />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+      <ToastContainer position="top-center" autoClose={3000} />
+    </>
   );
 }
 
