@@ -27,7 +27,7 @@ const About = () => {
 </style>
 
     <div className="w-full flex flex-col items-center justify-center px-10 mt-10  overflow-hidden">
-      <h1 className="text-zinc-800 text-center text-4xl font-bold mb-8 uppercase">
+      <h1 className="text-capitalize text-zinc-800 text-center text-4xl font-bold mb-8 ">
         About Us
       </h1>
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6 p-8 ">
