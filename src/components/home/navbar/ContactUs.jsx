@@ -11,7 +11,6 @@ const ContactUs = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  // const [success, setSuccess] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -33,7 +32,7 @@ const ContactUs = () => {
 
   return (
     <div className="w-full py-10 flex flex-col text-center items-center w-full">
-      <h1 className="text-4xl font-bold capitalize mb-8">
+      <h1 className="text-4xl font-bold text-blue-600 capitalize mb-8">
         Get In touch with Us
       </h1>
       <form
@@ -47,7 +46,7 @@ const ContactUs = () => {
           onChange={handleChange}
           required
           placeholder="Enter your full name"
-          className="w-full p-2 border border-zinc-400 rounded-sm  outline-none "
+          className="w-full p-2 border border-zinc-400 rounded-sm outline-none "
         />
         <input
           name="email"

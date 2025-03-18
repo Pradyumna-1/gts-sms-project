@@ -1,25 +1,38 @@
+// Other Services
+
 import React, { useState } from "react";
+import axios from "axios";
 
 const OtherServices = () => {
   const [requirement, setRequirement] = useState("");
   const [appointmentDate, setAppointmentDate] = useState("");
-
-  const handleSubmit = (e) => {
+  const [appointmentAddress, setAppointmentAddress] = useState("");
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!appointmentDate) {
       alert("Please select a date for your appointment.");
       return;
     }
 
-    const appointmentData = { requirement, appointmentDate };
-    localStorage.setItem("appointment", JSON.stringify(appointmentData)); // Store in local storage
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/services/submit",
+        {
+          serviceType: "OtherServices",
+          requirement,
+          appointmentAddress,
+          appointmentDate,
+        }
+      );
 
-    alert(
-      `Appointment request received! \nRequirement: ${requirement} \nDate: ${appointmentDate}`
-    );
-
-    setRequirement(""); // Clear input
-    setAppointmentDate(""); // Clear date
+      alert(response.data.message);
+      setRequirement("");
+      setAppointmentAddress("");
+      setAppointmentDate("");
+    } catch (error) {
+      alert("Error submitting data.");
+      console.error(error);
+    }
   };
 
   return (
@@ -28,7 +41,6 @@ const OtherServices = () => {
         Welcome To Other Services
       </h2>
 
-      {/* Requirement Form */}
       <form onSubmit={handleSubmit} className="mt-6">
         <label className="block font-semibold text-gray-700 mb-2">
           Enter Your Requirements
@@ -38,6 +50,17 @@ const OtherServices = () => {
           placeholder="Describe your requirement..."
           value={requirement}
           onChange={(e) => setRequirement(e.target.value)}
+          required
+        ></textarea>
+
+        <label className="block font-semibold text-gray-700 mb-2">
+          Enter Your Address
+        </label>
+        <textarea
+          className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter Your Address..."
+          value={appointmentAddress}
+          onChange={(e) => setAppointmentAddress(e.target.value)}
           required
         ></textarea>
 
@@ -59,12 +82,6 @@ const OtherServices = () => {
           Request Appointment
         </button>
       </form>
-
-      {/* OR Section */}
-      <p className="mt-2 text-center text-gray-700 font-semibold">Or</p>
-      <p className="text-center text-blue-500 font-semibold cursor-pointer ">
-        Visit Our SMS Center!
-      </p>
     </div>
   );
 };

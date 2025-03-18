@@ -11,10 +11,10 @@ import Help from "./components/home/navbar/Help";
 import BankingServices from "./components/home/services/BankingServices";
 import OtherServices from "./components/home/services/OtherServices";
 import { ToastContainer } from "react-toastify";
-
+import DoctorAppointment from "./components/home/services/DoctorAppointment";
+import LawyerService from "./components/home/services/LawyerService";
 function App() {
   // const [users, setUsers] = useState([]);
-
   return (
     <>
       <BrowserRouter>
@@ -31,6 +31,10 @@ function App() {
             <Route path="/help" element={<Help />} />
             <Route path="/bankingservices" element={<BankingServices />} />
             <Route path="/otherservices" element={<OtherServices />} />
+            <Route path="/doctorappointment" element={<DoctorAppointment />} />
+            <Route path="/lawyerservice" 
+            element={<LawyerService/>}
+             />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -22,13 +22,15 @@ const Services = () => {
             }`}
             onClick={() => {
               setSelectedService("Banking Services");
-              navigate("/BankingServices");
+              navigate("/bankingservices");
             }}
           >
             Banking Services
           </div>
 
-          {/* Doctor Appointment */}
+          {
+            /* Doctor Appointment */
+          }
           <div
             className={`p-4 rounded-lg text-center text-lg font-semibold text-white cursor-pointer transition-all duration-300 bg-green-500 hover:scale-105 hover:shadow-xl
             ${
@@ -38,13 +40,15 @@ const Services = () => {
             }`}
             onClick={() => {
               setSelectedService("Doctor Appointment");
-              navigate("/DoctorAppointment");
+              navigate("/doctorappointment");
             }}
           >
             Doctor Appointment
           </div>
 
-          {/* Lawyer Services */}
+          {
+            /* Lawyer Services */
+          }
           <div
             className={`p-4 rounded-lg text-center text-lg font-semibold text-white cursor-pointer transition-all duration-300 bg-purple-500 hover:scale-105 hover:shadow-xl
             ${
@@ -54,13 +58,15 @@ const Services = () => {
             }`}
             onClick={() => {
               setSelectedService("Lawyer Services");
-              navigate("/LawyerServices");
+              navigate("/lawyerservice");
             }}
           >
             Lawyer Services
           </div>
 
-          {/* Other Services */}
+          {
+            /* Other Services */
+          }
           <div
             className={`p-4 rounded-lg text-center text-lg font-semibold text-white cursor-pointer transition-all duration-300 bg-red-500 hover:scale-105 hover:shadow-xl
             ${
@@ -70,8 +76,7 @@ const Services = () => {
             }`}
             onClick={() => {
               setSelectedService("Other Services");
-              // updeted navigate
-              navigate("/OtherServices");
+              navigate("/otherservices");
             }}
           >
             Other Services
