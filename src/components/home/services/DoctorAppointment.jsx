@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { db } from "../../../firebase/firebaseConfig"; // Firebase Config
 import { collection, addDoc } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 const DoctorAppointment = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const DoctorAppointment = () => {
 
     try {
       await addDoc(collection(db, "doctor_appointments"), formData);
-      alert("Doctor appointment booked successfully!");
+      toast.success("Doctor appointment booked successfully")
 
       // Reset form fields after submission
       setFormData({
@@ -35,14 +36,14 @@ const DoctorAppointment = () => {
         problem: "",
       });
     } catch (error) {
-      alert("Error submitting appointment.");
+      toast.error("Error submitting appointment.");
       console.error("Firestore Error:", error);
     }
   };
 
   return (
     <div className="w-full flex justify-center items-center min-h-screen  from-blue-100  p-6">
-      <fieldset className="w-full max-w-lg p-8 text-center bg-white rounded-xl shadow-xl border border-gray-300">
+      <fieldset className="w-full max-w-lg p-8 text-center bg-white rounded-xl shadow-xl border border-gray-300 mt-8">
         <form onSubmit={handleSubmit} className="space-y-4">
           <h1 className="text-3xl font-bold text-blue-700 mb-6">Doctor Appointment</h1>
 

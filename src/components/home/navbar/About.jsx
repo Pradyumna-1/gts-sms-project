@@ -23,7 +23,7 @@ const About = () => {
   `}
 </style>
 
-<div className="w-full flex flex-col items-center justify-center px-6 sm:px-10 mt-10 overflow-hidden">
+<div className="w-full flex flex-col items-center justify-center px-6 sm:px-10 mt-18 overflow-hidden">
   {/* Heading */}
   <h1 className="text-center text-4xl text-blue-600 font-bold mb-6">
     About Us
@@ -40,8 +40,9 @@ const About = () => {
     />
 
     {/* Paragraph - Below image for mobile, beside image for laptop */}
-    <p className="w-full sm:w-4/5 md:w-2/3 text-center sm:text-left md:text-left text-base sm:text-lg leading-relaxed mt-2 sm:mt-4 md:mt-12 mx-auto md:mx-0">
-      At <span className="font-semibold">GTS</span>, we provide seamless access
+    <p className="w-full sm:w-4/5 md:w-2/3 text-center sm:text-left md:text-left text-base sm:text-lg leading-relaxed mt-2 sm:mt-4 md:mt-12 mx-auto md:mx-0 md:-ml-8">
+
+    At <span className="font-semibold">GTS</span>, we provide seamless access
       to{" "}
       <span className="font-semibold">legal, medical, and banking services</span>{" "}
       to meet your needs. Whether you require expert{" "}

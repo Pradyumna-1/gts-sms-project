@@ -6,7 +6,7 @@ import Home from "./components/home/Home";
 import AuthForm from "./components/login/AuthForm";
 import About from "./components/home/navbar/About";
 import ContactUs from "./components/home/navbar/ContactUs";
-import Services from "./components/home/navbar/Services";
+// import Services from "./components/home/navbar/Services";
 import Help from "./components/home/navbar/Help";
 import BankingServices from "./components/home/services/BankingServices";
 import OtherServices from "./components/home/services/OtherServices";
@@ -27,7 +27,7 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/contactus" element={<ContactUs />} />
-            <Route path="/services" element={<Services />} />
+            {/* <Route path="/services" element={<Services />} /> */}
             <Route path="/help" element={<Help />} />
             <Route path="/bankingservices" element={<BankingServices />} />
             <Route path="/otherservices" element={<OtherServices />} />
