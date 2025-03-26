@@ -280,15 +280,38 @@
 // };
 
 // export default Home;
-
 import React, { useState } from "react";
 import { signOut } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { auth } from "../../firebase/firebaseConfig";
 import "../../App.css";
+// import { FaRegSmile } from "react-icons/fa";
+// import Picker from "emoji-picker-react";
+import Post from "./services/Post";
+
 const Home = () => {
   const navigate = useNavigate();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  // const [searchQuery, setSearchQuery] = useState("");
+  // const [posts, setPosts] = useState([]);
+  // const [isModalOpen, setModalOpen] = useState(false);
+  // const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  // const [showPopup, setShowPopup] = useState(false);
+  // const [postData, setPostData] = useState({
+  //   image: "",
+  //   description: "",
+  //   emoji: "",
+  // });
+
+  // Dummy posts to load initially
+  // useEffect(() => {
+  //   const dummyPosts = Array.from({ length: 10 }).map((_, index) => ({
+  //     image: `https://via.placeholder.com/150?text=Post+${index + 1}`,
+  //     description: `This is a dummy post #${index + 1}`,
+  //     emoji: index % 2 === 0 ? "😊" : "👍",
+  //   }));
+  //   setPosts(dummyPosts);
+  // }, []);
 
   const handleLogout = async () => {
     try {
@@ -299,11 +322,30 @@ const Home = () => {
     }
   };
 
+  // Handle Post Submission
+  // const handlePost = () => {
+  //   if (postData.image || postData.description) {
+  //     setPosts([postData, ...posts]);
+  //     setPostData({ image: "", description: "", emoji: "" });
+  //     setModalOpen(false);
+  //     setShowPopup(true);
+
+      // Hide pop-up after 3 seconds
+  //     setTimeout(() => setShowPopup(false), 3000);
+  //   }
+  // };
+
+  // Handle Emoji Selection
+  // const onEmojiClick = (event, emojiObject) => {
+  //   setPostData({ ...postData, emoji: postData.emoji + emojiObject.emoji });
+  //   setShowEmojiPicker(false);
+  // };
+
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="fixed left-0 top-0 w-68 h-full bg-[#1557b3] text-white p-4 flex flex-col justify-between shadow-lg hidden md:flex">
-        <ul className="space-y-3 mt-15">
+        <ul className="space-y-3 mt-20">
           <li className="relative">
             <button
               onClick={() => setDropdownOpen(!isDropdownOpen)}
@@ -370,71 +412,14 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Main Content + Footer Wrapper */}
-      <div className="ml-0 md:ml-64 flex flex-col w-full mt-4">
-        <div className="p-6 flex-1">
-          <div className="text-center mt-12">
-            <h1 className="text-3xl md:text-4xl text-black font-extrabold mb-4">
-              Welcome to <span className="text-blue-600">SMS</span>
-            </h1>
-            <p className="text-gray-700 text-lg">
-              Sadha Mee Seva Lo - Connecting You to Essential Services
-            </p>
-          </div>
-
-          {/* Services Overview */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-10">
-            {[
-              { name: "Lawyers", path: "/lawyerservice" },
-              { name: "Doctors", path: "/doctorappointment" },
-              { name: "Banking", path: "/bankingservices" },
-              { name: "Others", path: "/otherservices" },
-            ].map((service, index) => (
-              <div
-                key={index}
-                className="bg-white shadow-md p-4 rounded-lg hover:shadow-lg transition"
-              >
-                <h3 className="text-lg font-semibold text-blue-600">
-                  {service.name}
-                </h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  Explore professional assistance and book services easily.
-                </p>
-                <Link
-                  to={service.path}
-                  className="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                >
-                  Explore {service.name}
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-12 max-w-2xl mx-auto">
-          <h3 className="text-xl font-bold text-blue-700 mb-4">
-            What Our Users Say
-          </h3>
-          <div className="space-y-4">
-            <div className="p-4 bg-white shadow-md rounded-lg">
-              <p className="text-gray-700">
-                "Amazing platform! Helped me book a lawyer easily."
-              </p>
-              <span className="text-blue-600 font-semibold">- Ravi Kumar</span>
-            </div>
-            <div className="p-4 bg-white shadow-md rounded-lg">
-              <p className="text-gray-700">
-                "Fast and easy doctor appointments. Great service!"
-              </p>
-              <span className="text-blue-600 font-semibold">- Sita Devi</span>
-            </div>
-          </div>
-        </div>
-
+      {/* Main Content */}
+      <div className="ml-0 md:ml-64 flex flex-col mt-50 w-full">
+        <div className="justify-center text-center -ml-130">
+      <Post/>
+      </div>
         {/* Footer Section */}
-        <footer className="mt-6 gap-0 ml-[-24px] mr-[-24px] mb-[-24px] p-6 text-white bg-[#1557b3] ">
-        <div className="max-w-[100vw] mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left px-6">
-
+        <footer className="bg-[#1557b3] text-white p-6 -ml-2 -mb-10 w-full">
+          <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
             {/* About Section */}
             <div>
               <h2 className="text-lg font-bold mb-3">About SMS</h2>
@@ -479,19 +464,13 @@ const Home = () => {
             {/* Contact Section */}
             <div>
               <h2 className="text-lg font-bold mb-3">Contact Us</h2>
-              <p className="text-sm leading-relaxed">
-                📞 +91 98765 43210
-                <br />
-                📧 support@smsservice.com
-                <br />
-                📍 Hyderabad, Telangana
-              </p>
+              <p className="text-sm">📞 +91-98765-43210</p>
+              <p className="text-sm">✉️ support@smsplatform.com</p>
+              <p className="text-sm">📍 Hyderabad, Telangana</p>
             </div>
           </div>
-
-          {/* Copyright Section */}
-          <div className="text-center text-sm mt-6 border-t border-gray-300 pt-4">
-            © {new Date().getFullYear()} Sadha Mee Seva Lo. All Rights Reserved.
+          <div className="text-center mt-6 text-sm">
+            © 2025 Sadha Mee Seva Lo. All rights reserved.
           </div>
         </footer>
       </div>

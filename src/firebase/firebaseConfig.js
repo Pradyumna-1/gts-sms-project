@@ -6,7 +6,7 @@ import {
   browserSessionPersistence,
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
+import { getStorage } from "firebase/storage";
 const firebaseConfig = {
   apiKey: "AIzaSyABoyyFqDqLq8J3bpd4MaykXRHqovQqpjQ",
   authDomain: "gts-sms.firebaseapp.com",
@@ -15,11 +15,12 @@ const firebaseConfig = {
   messagingSenderId: "219415919225",
   appId: "1:219415919225:web:41b429c0e0c4e6c0e172a8",
 };
-
+// import { db } from "../../../firebase/firebaseConfig";
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 // Ensure session persistence
 setPersistence(auth, browserSessionPersistence)
@@ -30,7 +31,7 @@ setPersistence(auth, browserSessionPersistence)
     console.error(" Firebase Persistence Error:", error);
   });
 
-export { auth, db };
+export { auth, db,storage };
 
 /*
 

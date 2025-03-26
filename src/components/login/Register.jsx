@@ -41,7 +41,7 @@ const Register = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 w-96 rounded-lg shadow-lg">
-        <h2 className="text-2xl text-center mt-6 mb-6 uppercase font-normal ">
+        <h2 className="text-2xl text-center mt-6 mb-6 uppercase  font-semibold  ">
           Register
         </h2>
         <form
