@@ -2,11 +2,18 @@ import React, { useState, useEffect } from "react";
 import { FaRegSmile, FaEllipsisH, FaTimes } from "react-icons/fa";
 import Picker from "emoji-picker-react";
 import emailjs from "@emailjs/browser";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import prf from "../../../images/profileimg.png";
 import prf1 from "../../../images/profil.png";
 import cal from "../../../images/cal.png";
 import art from "../../../images/art.png";
+import { db } from "../../../firebase/firebaseConfig";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { toast } from "react-toastify";
 
 const Post = () => {
@@ -15,41 +22,33 @@ const Post = () => {
   const [posts, setPosts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const [showDropdown, setShowDropdown] = useState(null);
   const [postData, setPostData] = useState({
-    username: "", // Start with empty username
+    username: "",
     specialist: "",
     description: "",
     emoji: "",
-    imageFile: null,
-    imagePreview: null,
+    specialId: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
 
+  // Fetch posts from Firestore and sort by createdAt descending
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (!currentUser) {
-        setError("Please log in to access this feature.");
-      }
-      // Removed automatic username setting here
-    });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:5000/posts");
-        if (!response.ok) throw new Error("Failed to fetch posts");
-        const postsData = await response.json();
-        setPosts(postsData);
+        const querySnapshot = await getDocs(collection(db, "posts"));
+        const postsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        const sortedPosts = postsData.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        console.log("Fetched and sorted posts:", sortedPosts);
+        setPosts(sortedPosts);
       } catch (err) {
         console.error("Error fetching posts:", err);
         setError("Failed to load posts. Please refresh the page.");
@@ -58,115 +57,90 @@ const Post = () => {
       }
     };
     fetchPosts();
-  }, [user]);
+  }, []);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError("Image size must be less than 5MB");
-        return;
-      }
-      if (!file.type.startsWith("image/")) {
-        setError("Please upload an image file");
-        return;
-      }
-      setPostData((prev) => ({
-        ...prev,
-        imageFile: file,
-        imagePreview: URL.createObjectURL(file),
-      }));
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
     }
-  };
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isModalOpen]);
 
-  const handlePost = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log("handlePost called");
+  // Close modal with Escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && isModalOpen) {
+        setModalOpen(false);
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isModalOpen]);
 
-    if (!user) {
-      setError("Please log in to create a post.");
-      return;
-    }
-
+  // Handle Post Submission
+  const handlePost = async () => {
     setError(null);
-
     if (!postData.username || !postData.specialist) {
       setError("Please enter your name and select a specialist");
       return;
     }
-
     if (!postData.description) {
       setError("Please add a description");
       return;
     }
-
     try {
       setLoading(true);
-      console.log("Sending POST request...");
-
-      const formData = new FormData();
-      formData.append("username", postData.username);
-      formData.append("specialist", postData.specialist);
-      formData.append("description", postData.description);
-      formData.append("emoji", postData.emoji);
-      if (postData.imageFile) {
-        formData.append("image", postData.imageFile);
-      }
-
-      const response = await fetch("http://localhost:5000/post/submit", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
+      const newPost = {
+        username: postData.username,
+        specialist: postData.specialist,
+        description: postData.description,
+        emoji: postData.emoji,
+        specialId: `#${postData.specialist.toLowerCase()}`,
+        timestamp: new Date().toLocaleString(),
+        createdAt: new Date().toISOString(),
+      };
+      const docRef = await addDoc(collection(db, "posts"), newPost);
+      setPosts((prevPosts) => {
+        const updatedPosts = [{ id: docRef.id, ...newPost }, ...prevPosts];
+        console.log("Updated posts after adding:", updatedPosts);
+        return updatedPosts;
       });
-
-      console.log("Post Response Status:", response.status);
-      console.log("Post Response Headers:", [...response.headers]);
-
-      if (response.status >= 300 && response.status < 400) {
-        console.error("Redirect detected:", response.status, response.url);
-        throw new Error("Server attempted a redirect, which is not allowed.");
-      }
-
-      const result = await response.json();
-      console.log("Post Response Body:", result);
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to submit post");
-      }
-
-      setPosts((prevPosts) => [result.post, ...prevPosts]);
       setPostData({
-        username: "", // Reset to empty after posting
+        username: "",
         specialist: "",
         description: "",
         emoji: "",
-        imageFile: null,
-        imagePreview: null,
+        specialId: "",
       });
       setModalOpen(false);
-      console.log("Showing success toast...");
-      toast.success("🎉 Post successfully created!", { autoClose: 10000 });
+      toast.success("🎉 Post successfully created!");
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 3000);
     } catch (error) {
-      console.error("Error adding post:", error.message);
-      setError(error.message || "Failed to create post. Please try again.");
-      toast.error(error.message || "Failed to create post.", {
-        autoClose: 10000,
-      });
+      console.error("Error adding post:", error);
+      setError("Failed to create post. Please try again.");
     } finally {
       setLoading(false);
-      console.log("handlePost completed");
     }
   };
 
+  // Improved Emoji Handling
   const onEmojiClick = (emojiObject) => {
     setPostData((prev) => ({
       ...prev,
-      emoji: (prev.emoji || "") + emojiObject.emoji,
+      emoji:
+        prev.emoji.length < 5 ? prev.emoji + emojiObject.emoji : prev.emoji,
     }));
     setShowEmojiPicker(false);
   };
 
+  // Filter and sort posts (newest first)
   const filteredPosts = posts
     .filter(
       (post) =>
@@ -177,18 +151,15 @@ const Post = () => {
     )
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  const handleConnect = (post) => {
-    if (!user) {
-      setError("Please log in to connect.");
-      return;
-    }
+  console.log("Filtered and sorted posts:", filteredPosts);
 
+  // Send Email on Connect
+  const handleConnect = (post) => {
     const templateParams = {
       to_email: "uppuraghu21@gmail.com",
       from_name: post.username,
       specialist: post.specialist,
     };
-
     emailjs
       .send(
         "service_h7log1r",
@@ -197,125 +168,77 @@ const Post = () => {
         "4M9NBDeam5qtZtWYb"
       )
       .then(
-        () => toast.success(`Connection request sent to ${post.username}`),
-        () =>
-          toast.warning(
+        () => {
+          toast.success(`Connection request sent to ${post.username}`);
+        },
+        (error) => {
+          toast.error(
             `Failed to send connection request to ${post.username}. Please try again.`
-          )
+          );
+        }
       );
   };
 
+  // Delete Post
   const handleDelete = async (postId) => {
-    if (!user) {
-      setError("Please log in to delete a post.");
-      return;
-    }
-
     toast(
       ({ closeToast }) => (
         <div>
           <p>Are you sure you want to delete this post?</p>
-          <div className="flex justify-end space-x-2 mt-2">
-            <button
-              onClick={async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log("Delete Yes clicked");
-
-                try {
-                  setLoading(true);
-                  console.log("Sending DELETE request...");
-                  const response = await fetch(
-                    `http://localhost:5000/post/${postId}`,
-                    {
-                      method: "DELETE",
-                      credentials: "include",
-                    }
-                  );
-
-                  console.log("Delete Response Status:", response.status);
-                  console.log("Delete Response Headers:", [
-                    ...response.headers,
-                  ]);
-
-                  if (response.status >= 300 && response.status < 400) {
-                    console.error(
-                      "Redirect detected:",
-                      response.status,
-                      response.url
-                    );
-                    throw new Error(
-                      "Server attempted a redirect, which is not allowed."
-                    );
-                  }
-
-                  if (!response.ok) throw new Error("Failed to delete post");
-
-                  setPosts((prevPosts) =>
-                    prevPosts.filter((post) => post.id !== postId)
-                  );
-                  console.log("Showing delete success toast...");
-                  toast.success("Post deleted successfully!", {
-                    autoClose: 10000,
-                  });
-                } catch (error) {
-                  console.error("Error deleting post:", error);
-                  setError("Failed to delete post. Please try again.");
-                  toast.error("Failed to delete post.", { autoClose: 10000 });
-                } finally {
-                  setLoading(false);
-                  closeToast();
-                  console.log("handleDelete completed");
-                }
-              }}
-              className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-              type="button"
-            >
-              Yes
-            </button>
-            <button
-              onClick={() => closeToast()}
-              className="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400"
-              type="button"
-            >
-              No
-            </button>
-          </div>
+          <button
+            onClick={async () => {
+              try {
+                setLoading(true);
+                await deleteDoc(doc(db, "posts", postId));
+                setPosts((prev) => prev.filter((post) => post.id !== postId));
+                toast.success("Post deleted!");
+              } catch {
+                toast.error("Failed to delete post.");
+              } finally {
+                setLoading(false);
+                closeToast();
+              }
+            }}
+            className="bg-red-500 text-white px-3 py-2 text-sm rounded"
+          >
+            OK
+          </button>
         </div>
       ),
       { autoClose: false, position: "top-center" }
     );
   };
 
-  if (!user) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500">Please log in to access this feature.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="ml-70 flex flex-col justify-center -mt-35 w-300">
       <div className="p-6 flex-10">
+        {/* {loading && (
+          <div className="fixed top-20 right-5 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            Processing...
+          </div>
+        )} */}
         {error && (
           <div className="fixed top-20 right-5 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
             {error}
           </div>
         )}
-
+        {/* {showPopup && (
+          <div className="fixed top-20 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            🎉 Post successfully created!
+          </div>
+        )} */}
         <div className="flex justify-center mb-16 ml-65 space-x-4">
           <input
             type="text"
             placeholder="Search #doctor, #lawyer, or services..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full max-w-md p-2 border rounded-lg border-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full max-w-md p-2 border border-zinc-500 focus:blue-500 rounded-lg outline-none"
           />
           <select
             value={filterOption}
             onChange={(e) => setFilterOption(e.target.value)}
-            className="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 border-zinc-500"
+            className="p-2 border rounded-lg border-zinc-500 f focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All</option>
             <option value="doctor">Doctor</option>
@@ -323,7 +246,6 @@ const Post = () => {
             <option value="banking">Banking</option>
           </select>
         </div>
-
         <div className="bg-gray-100 p-4 rounded-lg shadow-md max-w-xl -mt-10 flex flex-col ml-105">
           <div className="flex items-center gap-3 mb-4">
             <img src={prf1} alt="Profile" className="w-12 h-12 rounded-full" />
@@ -337,7 +259,6 @@ const Post = () => {
           </div>
           <div className="flex justify-around">
             <button
-              type="button"
               className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 p-2 rounded-lg"
               onClick={() => setModalOpen(true)}
             >
@@ -345,7 +266,6 @@ const Post = () => {
               <span className="text-gray-700">Media</span>
             </button>
             <button
-              type="button"
               className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 p-2 rounded-lg"
               onClick={() => setModalOpen(true)}
             >
@@ -353,7 +273,6 @@ const Post = () => {
               <span className="text-gray-700">Event</span>
             </button>
             <button
-              type="button"
               className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 p-2 rounded-lg"
               onClick={() => setModalOpen(true)}
             >
@@ -362,28 +281,32 @@ const Post = () => {
             </button>
           </div>
         </div>
-
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-            <div className="bg-white w-full max-w-2xl p-6 rounded-lg shadow-lg relative">
+          <div
+            className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 transition-opacity duration-300 ${
+              isModalOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+          >
+            <div
+              className={`bg-white w-full max-w-2xl p-6 rounded-lg shadow-lg relative transition-transform duration-300 ${
+                isModalOpen ? "scale-100" : "scale-95"
+              }`}
+            >
               <button
-                type="button"
                 onClick={() => {
                   setModalOpen(false);
                   setShowEmojiPicker(false);
-                  setPostData((prev) => ({
-                    ...prev,
-                    imageFile: null,
-                    imagePreview: null,
-                  }));
                 }}
                 className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
               >
                 <FaTimes className="text-xl" />
               </button>
-
-              <h1 className="text-xl font-semibold mb-4">Create a Post</h1>
-
+              <h1 id="modal-title" className="text-xl font-semibold mb-4">
+                Create a Post
+              </h1>
               <div className="flex items-center mb-4 space-x-4">
                 <img
                   src={prf}
@@ -403,7 +326,6 @@ const Post = () => {
                   className="flex-grow p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
               <select
                 value={postData.specialist}
                 onChange={(e) =>
@@ -419,7 +341,6 @@ const Post = () => {
                 <option value="Lawyer">Lawyer</option>
                 <option value="Banking">Banking</option>
               </select>
-
               <textarea
                 rows="4"
                 placeholder="Add a description..."
@@ -432,38 +353,6 @@ const Post = () => {
                 }
                 className="w-full p-3 mb-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-
-              <div className="mb-3">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="w-full p-2 border rounded-lg"
-                />
-                {postData.imagePreview && (
-                  <div className="mt-2 relative">
-                    <img
-                      src={postData.imagePreview}
-                      alt="Preview"
-                      className="max-h-40 rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setPostData((prev) => ({
-                          ...prev,
-                          imageFile: null,
-                          imagePreview: null,
-                        }))
-                      }
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                    >
-                      <FaTimes />
-                    </button>
-                  </div>
-                )}
-              </div>
-
               <div className="flex items-center space-x-3 mb-3 relative">
                 <button
                   type="button"
@@ -482,10 +371,7 @@ const Post = () => {
                 />
                 {postData.emoji && (
                   <button
-                    type="button"
-                    onClick={() =>
-                      setPostData((prev) => ({ ...prev, emoji: "" }))
-                    }
+                    onClick={() => setPostData((prev) => ({ ...prev, emoji: "" }))}
                     className="text-gray-500 hover:text-red-500"
                   >
                     <FaTimes className="text-xl" />
@@ -502,15 +388,9 @@ const Post = () => {
               </div>
               <div className="flex justify-end space-x-4">
                 <button
-                  type="button"
                   onClick={() => {
                     setModalOpen(false);
                     setShowEmojiPicker(false);
-                    setPostData((prev) => ({
-                      ...prev,
-                      imageFile: null,
-                      imagePreview: null,
-                    }));
                   }}
                   className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
                   disabled={loading}
@@ -518,7 +398,6 @@ const Post = () => {
                   Cancel
                 </button>
                 <button
-                  type="button"
                   onClick={handlePost}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
                   disabled={loading}
@@ -529,7 +408,6 @@ const Post = () => {
             </div>
           </div>
         )}
-
         <div className="mt-8 w-145 ml-105">
           {filteredPosts.length > 0 ? (
             filteredPosts.map((post) => (
@@ -548,7 +426,6 @@ const Post = () => {
                     <p className="text-gray-500">{post.specialId}</p>
                   </div>
                   <button
-                    type="button"
                     onClick={() =>
                       setShowDropdown(showDropdown === post.id ? null : post.id)
                     }
@@ -557,34 +434,23 @@ const Post = () => {
                     <FaEllipsisH />
                   </button>
                   {showDropdown === post.id && (
-                    <div className="absolute bg-white right-4 top-12 border rounded-lg shadow-lg z-10">
+                    <div className="absolute right-4 top-12 bg-white border rounded-md border-zinc-700 shadow-lg z-10">
                       <button
-                        type="button"
                         onClick={() => handleDelete(post.id)}
-                        className="block px-4 py-2 w-full text-left text-red-500 hover:bg-gray-100 rounded-md"
+                        className="block px-3 py-1 w-full text-left text-red-500 cursor-pointer"
                       >
-                        Delete Post
+                        Delete
                       </button>
                     </div>
                   )}
                 </div>
-
                 <p className="text-sm text-gray-600 break-words mb-2">
                   {post.description}
                 </p>
-                {post.imageUrl && (
-                  <img
-                    src={`http://localhost:5000${post.imageUrl}`}
-                    alt="Post content"
-                    className="w-full h-auto rounded-lg mb-2"
-                  />
-                )}
                 {post.emoji && <p className="text-2xl mb-2">{post.emoji}</p>}
-
                 <div className="flex justify-between items-center text-sm text-gray-500">
                   <span>{post.timestamp}</span>
                   <button
-                    type="button"
                     onClick={() => handleConnect(post)}
                     className="px-4 py-2 bg-blue-100 text-blue-500 border border-blue-300 rounded-lg hover:bg-blue-200 transition"
                   >

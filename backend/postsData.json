@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1743162070270",
+    "username": "Geetha",
+    "specialist": "Doctor",
+    "description": "Dr. Geetha is a dedicated and compassionate physician with two years of experience in the medical field. Known for her strong work ethic and patient-centered approach, she has quickly built a reputation for providing excellent care. Whether diagnosing illnesses, treating patients, or offering preventive health advice, Dr. Angela ensures that every individual receives personalized attention. Her passion for medicine drives her to stay updated with the latest advancements in healthcare. In just two years, she has gained valuable experience, Ava is not only a healer but also a source of comfort and reassurance for those she treats. With a bright future ahead, she continues to grow in her profession, making a meaningful difference in the lives of her patients every day",
+    "emoji": "👩‍⚕️",
+    "specialId": "#doctor",
+    "imageUrl": "/uploads/1743162070267-doctor.jpeg",
+    "timestamp": "28/3/2025, 5:11:10 pm",
+    "createdAt": "2025-03-28T11:41:10.277Z"
+  },
+  {
+    "id": "1743162307234",
+    "username": "Raghu",
+    "specialist": "Banking",
+    "description": "Raghu is a skilled banking professional with five years of experience in the financial sector. He specializes in [your area of expertise, e.g., retail banking, investment banking, loan management, etc.] and is committed to delivering efficient financial solutions. With a deep understanding of banking operations and customer needs, he ensures seamless financial services while maintaining high standards of professionalism and integrity.",
+    "emoji": "",
+    "specialId": "#banking",
+    "imageUrl": "/uploads/1743162307227-raghu.jpg",
+    "timestamp": "28/3/2025, 5:15:07 pm",
+    "createdAt": "2025-03-28T11:45:07.234Z"
+  },
+  {
+    "id": "1743162405355",
+    "username": "Dr. Arpita",
+    "specialist": "Doctor",
+    "description": "Arpita is a dedicated lawyer with five years of experience in the legal field. She specializes in [your area of expertise, e.g., corporate law, litigation, family law, etc.] and is committed to providing strategic legal solutions for her clients. With a strong understanding of legal principles and a passion for justice, she navigates complex cases with professionalism and precision.",
+    "emoji": "👩‍⚕️",
+    "specialId": "#doctor",
+    "imageUrl": "/uploads/1743162405260-arpita.jpg",
+    "timestamp": "28/3/2025, 5:16:45 pm",
+    "createdAt": "2025-03-28T11:46:45.355Z"
+  },
+  {
+    "id": "1743163645040",
+    "username": "Rakesh",
+    "specialist": "Lawyer",
+    "description": "Rakesh Sharma is a dedicated and detail-oriented lawyer with 5 years of experience specializing in corporate law, civil litigation, and contract negotiations. Over the years, he has successfully represented clients in property disputes, business contracts, and criminal defense cases, ensuring their rights are protected with a strategic approach.\r\n\r\nRakesh holds a Bachelor of Laws (LLB) from a reputed university and has been practicing in both district and high courts. Known for his strong analytical skills, persuasive arguments, and client-focused approach, he has built a reputation for providing sound legal advice tailored to individual needs.",
+    "emoji": "",
+    "specialId": "#lawyer",
+    "imageUrl": "/uploads/1743163644854-rakesh.jpeg",
+    "timestamp": "28/3/2025, 5:37:25 pm",
+    "createdAt": "2025-03-28T12:07:25.085Z"
+  },
+  {
+    "id": "1743164082569",
+    "username": "Dr. Samantha",
+    "specialist": "Doctor",
+    "description": "Dr. Samantha is a dedicated lawyer with five years of experience in the legal field. She specializes in 4 yr of experience is committed to providing strategic legal solutions for her clients. With a strong understanding of legal principles and a passion for justice, she navigates complex cases with professionalism and precision.",
+    "emoji": "",
+    "specialId": "#doctor",
+    "imageUrl": "/uploads/1743164082540-samantha.jpeg",
+    "timestamp": "28/3/2025, 5:44:42 pm",
+    "createdAt": "2025-03-28T12:14:42.570Z"
+  }
+]
